@@ -85,9 +85,42 @@
     ./wc.go:21: missing return at end of function   
 
   编译会失败因为 mapF() 和 reduceF()未完成。  
-  回顾 MapReduce 论文的第二章，你的 mapF() 和 reduceF() 要和原论文章节 2.1 有点区别。你的 mapF() 要传递文件名，文件内容，应该将内容分割为单词，并返回一个 mapreduce.KeyValue 的 GO 切片。
+  回顾 MapReduce 论文的第二章，你的 mapF() 和 reduceF() 要和原论文章节 2.1 有点区别。你的 mapF() 要传递文件名，文件内容，应该将内容分割为单词，并返回一个 mapreduce.KeyValue 的 GO 切片。当你为mapF选择输出 key 和 value的时候，对于单词统计来说只有将单词设置为 key才有意义。你的 reduceF() 对每个 key 都将被调用一次，并且 mapF() 方法会针对这个 key 生成所有 values 的切片。它必须返回一个包含 key 的出现次数的字符串。
+  > 提示：
+  * 一个很好的阅读 Go string 的地方是[Go Blog on strings](http://blog.golang.org/strings)
+  * 你可以使用 [strings.FieldsFunc](http://golang.org/pkg/strings/#FieldsFunc) 将 string 拆分为 components
+  * [strconv 包](http://golang.org/pkg/strconv/) 可以用来将string 转换为 int等  
 
+  你可以通过以下方法来测试你的解决方法：
+    >  $ cd "$GOPATH/src/main"   
+    $ time go run wc.go master sequential pg-*.txt    
+    master: Starting Map/Reduce task wcseq    
+    Merge: read mrtmp.wcseq-res-0   
+    Merge: read mrtmp.wcseq-res-1   
+    Merge: read mrtmp.wcseq-res-2   
+    master: Map/Reduce task completed   
+    2.59user 1.08system 0:02.81elapsed  
 
+  输出在"mrtmp.wcseq"文件中，如果下面的命令生成下面显示的输出，那你的实现就是正确的:
+  > $ sort -n -k2 mrtmp.wcseq | tail -10    
+        that: 7871    
+        it: 7987    
+        in: 8415    
+        was: 8578   
+        a: 13382    
+        of: 13536   
+        I: 14296    
+        to: 16079   
+        and: 23612    
+        the: 29748    
+
+  你也可以删除输出文件和所有的中间文件：
+    > $ rm mrtmp.*
+  
+  为了让你们的测试更加简单，运行下面的命令，它会报告你的方法正确与否：
+    > $ bash ./test-wc.sh
+
+  ***任务：当我们在我们机器上运行你的软件，如果你的 Map/Reduce 单词统计输出跟顺序方式执行的输出一致，你就得到本部分所有分数。***
  TODO:后面还未翻译
    
     
