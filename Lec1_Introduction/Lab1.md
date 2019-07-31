@@ -54,7 +54,7 @@
    $ go test -run Sequential   
    ok  	mapreduce	2.694s
   
-  ***任务： 当我们在我们的机器上运行你的代码，如果通过顺序操作的测试(运行上述命令)，你将会得到本部分的所有分数。***  
+  ***任务： 当我们在我们的机器上运行你的代码，如果通过顺序操作的测试(运行上述命令)，你将会得到本部分的满分。***  
 
   如果测试输出没有显示OK，那你的实现就有bug。在 common.go 中设置 debugEnabled = true，并且在上面的测试命令中加入 -v 命令，会给出更纤细的输出。你会得到更多输出根据如下命令行：
   > $ env "GOPATH=$PWD/../../" go test -v -run Sequential   
@@ -120,7 +120,95 @@
   为了让你们的测试更加简单，运行下面的命令，它会报告你的方法正确与否：
     > $ bash ./test-wc.sh
 
-  ***任务：当我们在我们机器上运行你的软件，如果你的 Map/Reduce 单词统计输出跟顺序方式执行的输出一致，你就得到本部分所有分数。***
- TODO:后面还未翻译
-   
+  ***任务：当我们在我们机器上运行你的软件，如果你的 Map/Reduce 单词统计输出跟顺序方式执行的正确输出一致，你就得到本部分满分。***
+
+### Part III： 分布式的 MapReduce 任务
+  * 现在的实现一次只执行一个 map 和 reduce 任务。Map/Reduce 一个最大的卖点就是它可以自动并行化普通的串行代码而开发人员无需额外工作。在实验的本部分，你需要完成 MapReduce 的一个版本，可以分割在多个处理器上运行的一系列 worker 线程。虽然不像真实部署的 Map/Reduce 运行在多台机器上，你的实现要用 RPC 来模拟分布式计算。   
+  mapreduce/master.go 中的代码实现了管理 MapReduce job 的大部分工作。我们也在 mapreduce/worker.go 代码中提供了一个 worker 线程的完整代码，还有一些 mapreduce/common_rpc.go 中处理 RPC 的代码。  
+  你的工作是实现 mapreduce/schedule.go 中的 schedule() 方法。master 在一个 MapReduce job 中调用 schedule() 方法两次，一次是为 Map 调用，一次为 Reduce。schedule() 的工作是为可用的 worker 分配任务。通常任务数比线程数多，所以 schedule() 必须给每个 worker 一个任务序号，一次一个。schedule() 要等到所以任务结束之后才能返回。   
+  schedule() 通过读取 registerChan 参数来了解 worker 的工作集。channel 为每个 worker 生成一个字符串，其中包括 worker 的 RPC 地址。有些 worker 可能在 schedule() 调用前已经存在，还有的在 schedule() 运行的时候才开始，这些所有的都存在于 registerChan 中。schedule() 要使用所有的 worker，包括那些它启动之后才出现的。  
+  schedule() 给 worker 发送 Worker.DoTask 的 PRC 调用来通知一个 worker 去执行任务。RPC调用的参数都在 mapreduce/common_rpc.go 文件中的 DoTaskArgs 参数定义了。File 元素只被 Map 任务使用，并读取文件名，schedule() 可以在 mapFiles 中找到所有的文件名。  
+  使用 mapreduce/common_rpc.go 中的 call() 来给 worker 发送一个 RPC。第一个参数是从 registerChan 读到的 worker 的地址。第二个参数应该是 "Worker.DoTask"。第三个是 DoTaskArgs 的结构体，最后一个是 nil。 
+  在 Part III 中你的解答只需要修改 schedule.go。如果你在调试过程中修改了其他文件，请在提交前恢复到初试状态并测试。  
+  使用 go test -run TestParallel 来测试你的解答。会执行两个测试，TestParallelBasic 和 TestParallelCheck，后者会验证你的调度程序是否让任务并行执行。   
+
+     ***任务：当我们在我们机器上运行你程序的时候，如果通过了 TestParallelBasic 和 TestParallelCheck，你就能得到本部分的满分***
+
+    > 提示：    
+    * [RPC package](https://golang.org/pkg/net/rpc/) 记录了 Go RPC 包。  
+    * schedule() 应该并行地给 worker 发送 RPC，这样 worker 就可以并发执行任务。看看 [Go 并发](https://golang.org/doc/effective_go.html#concurrency)，你会发现 go 的声明对此很有用。   
+    * schedule() 必须等 worker 完成当前任务之后才能给他分配另一个任务。你可能发现 GO 的 channel 很有用。     
+    * 你可能会发现[sync.WaitGroup](https://golang.org/pkg/sync/#WaitGroup)很有用。   
+    * 跟踪 bug 的最简单的方法就是增加标准输出(也许调用 common.go 中的 debug()方法)，go test -run TestParallel > out 可以将输出收集到一个文件中，然后想想输出是否符合你关于代码如何运行的预期。最后一步最重要。   
+    * 用测试运行 GO 的 [Race Detector](https://golang.org/doc/articles/race_detector.html)：go test -race -run TestParallel > out 来检查你的代码是否存在竞态条件。
     
+    ***请注意：我们给出的代码在将 workers 作为单个 UNIX 进程中的线程运行，并且可以在单个机器上利用多个内核。为了在通过网络进行通信的多台机器上运行 workers，需要进行一些修改。RPC必须使用 TCP 而不是 UNIX 域套接字；需要有一种方法来启动所有机器上的 worker 进程；并且所有机器都必须通过某种网络文件系统共享存储。***
+
+### Part IV： 处理 worker 故障
+* 在这个部分你要让 master 处理 worker 的错误。MapReduce 让这个相对容易，因为 worker 没有持久化状态。如果一个 worker 在处理 master 的 RPC 请求时失败了，master 的 call() 会因为超时而返回 false。在这种情况下，master 应该将分配给这个失败了的 worker 的任务给另一个 worker。    
+RPC 错误并不一定意味着 worker 没有执行任务，worker 可能已经执行了任务但是回复丢失了，或者 worker 还在执行只不过 master 的 PRC 超时了。因此，两个 worker 收到同一个任务，计算并生成输出是可能发生的。需要对 map 和 reduce 执行两次才能对给定的输入生成相同的输出( map 和 reduce 功能是功能性的)，因此如果后续处理有时会读取一个输出而有时读取另一个，则不会出现不一致。另外，MapReduce 框架保证了 map 和 reduce 方法的输出是原子的，输出要么没有，要么就是 map 或者 reduce 操作的完整输出(本实验代码实际上并没有实现这一点，而是只在任务结束时使 worker 失败，因此没有任务的并发执行)。    
+***注意：你不需要去处理 master 的故障。使 master 容错更复杂因为它是有状态的，必须恢复状态才能在 master 故障后恢复运行。后续的很多实验都致力于这一挑战。***  
+
+  你的实现必须通过 test_test.go 中另外两个测试。第一个测试案例测试单个 worker 的故障处理，第二个测试多个 worker 的失败处理。这些测试用例定期启动新的 worker, master 可以使用它们去推进进度，但是这些 worker 会在执行一些任务后失败。用下面命令执行测试案例：
+  > $ go test -run Failure  
+
+  ***任务：当我们在我们机器上运行你们程序的时候，如果能通过上面命令的关于 worker 故障的测试，那你可以得到本部分的满分***  
+
+  在 Part IV 中你的解答只需要修改 schedule.go。如果你在调试过程中修改了其他文件，请在提交前恢复到初试状态并测试。
+   
+### Part V： 反向索引生成(可选，不计入成绩)
+* ***挑战***
+ 在本可选不计入成绩的练习中，你要构建 Map 和 Reduce 方法来实现反向索引生成。  
+ 反向索引在计算机科学中广泛应用，在文档搜索中特别有用。广义来说，反向索引是从有关基础数据的事实到该数据的原始位置的映射。举例来说，在搜索的上下文中，它可能是从关键字到包含这些单词的文档的映射。 
+ 我们已经建立了跟你建立的 wc.go 类似的第二个库 main/ii.go。你应该修改 main/ii.go 文件中的 mapF 和 reduceF 来让它们一起生成反向索引。运行 ii.go 应该生成一系列的元素，一个行，就像下面这样的格式：
+  > $ go run ii.go master sequential pg-*.txt   
+    $ head -n5 mrtmp.iiseq    
+    A: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+    ABOUT: 1 pg-tom_sawyer.txt    
+    ACT: 1 pg-being_ernest.txt    
+    ACTRESS: 1 pg-dorian_gray.txt   
+    ACTUAL: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,    pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt
+    
+  如果上面的清单还不够清晰，格式如下：
+  > word: #documents documents,sorted,and,separated,by,commas   
+
+  你可以运行 bash ./test-ii.sh 看看你的方法是否正确：
+  > $ LC_ALL=C sort -k1,1 mrtmp.iiseq | sort -snk2,2 | grep -v '16' | tail -10    
+      www: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      year: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt   
+      years: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      yesterday: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      yet: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      you: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      young: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt    
+      your: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt   
+      yourself: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt   
+      zip: 8 pg-being_ernest.txt,pg-dorian_gray.txt,pg-frankenstein.txt,pg-grimm.txt,pg-huckleberry_finn.txt,pg-metamorphosis.txt,pg-sherlock_holmes.txt,pg-tom_sawyer.txt  
+
+### 运行所有测试
+* 你可以通过运行 src/main/test-mr.sh 来运行所有测试。如果你的解法正确，输出应该类似如下：
+  > $ bash ./test-mr.sh   
+  ==> Part I    
+  ok  	mapreduce	2.053s    
+  ==> Part II   
+  Passed test   
+  ==> Part III    
+  ok  	mapreduce	1.851s    
+  ==> Part IV   
+  ok  	mapreduce	10.650s   
+  ==> Part V (inverted index)   
+  Passed test   
+### 提交代码
+ * ***重要：在提交前，请最后运行一次完整测试***
+   > $ bash ./test-mr.sh
+
+    通过课程提交网站提交您的代码，地址是：  
+    https://6824.scripts.mit.edu/2018/handin.py/
+
+    你可以使用MIT证书或通过电子邮件请求API密钥首次登录。登录后会显示你的API密钥（XXX），可用于从控制台上传 lab1，如下所示：
+    > $ cd "$GOPATH"    
+      $ echo XXX > api.key    
+      $ make lab1   
+    
+    ***重要：检查提交网站，确保已经提交了本实验***  
+    **提示：你可能提交多次代码，我们会使用最后一次提交的时间戳来计算是否按时提交**
