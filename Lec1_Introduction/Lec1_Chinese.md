@@ -113,5 +113,71 @@
     * 人们已经在这方面有了许多设计方法
 
 ### 案例学习：MapReduce
-* 让我们讨论下MapReduce (MR) 作为一个案例学习，MR 是6.824学习的很好的案例，也是Lab 1的焦点
-* MR 总览
+* 让我们讨论下 MapReduce (MR) 作为一个案例学习，MR 是 6.824 学习的很好的案例，也是Lab 1 的焦点
+* MR 总览   
+  * 背景：
+    * 对数 TB 的数据集进行数小时的计算，例如分析爬虫网页的图形结构
+    * 仅适用于数千台计算器
+    * 经常不是由分布式系统专家开发
+    * 分布式会非常痛苦，例如故障处理
+  * 总体目标：  
+    * 非专业编程人员可以轻易区分完成    
+    * 在很多服务器上以合理的效率处理数据
+  * 编程人员定义 Map 和 Reduce 方法
+    * 顺序性的代码，通常很容易
+  * MR 在数千台机器上用巨大的输入来执行方法并且隐藏了分布式的细节
+* MapReduce 抽象视图
+    * 输入被分成了 M 个文件
+    * 【图：map 生成 K-V 键值对的行，reduce 消费每一列】  
+     Input1 -> Map -> a,1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b,1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c,1   
+     Input2 -> Map ->    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b,1  
+     Input3 -> Map -> a,1     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c,1  
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;  |  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |       
+                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   -> Reduce -> c,2    
+                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -----> Reduce -> b,2    
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---------> Reduce -> a,2    
+    * MR 为每个输入文件调用 Map()，产生 k2,v2 的数据集
+        * 中间数据
+        * 每个 Map() 调用成为一个任务
+    * MR 为给定的 k2 收集所有的中间数据 v2,并将它们传给一个 Recude 调用
+    * 最终输出是一个来自 Reduce() 的 <k2,v3> 键值对的数据集，存在 R 个输出文件中
+* 示例：单词统计
+    * 输入是有数千个文本文件
+    * 
+    >  Map(k, v)    
+    &nbsp;&nbsp; split v into words  
+    &nbsp;&nbsp; for each word w    
+    &nbsp;&nbsp;&nbsp;&nbsp;  emit(w, "1")  
+Reduce(k, v)  
+   &nbsp;&nbsp;&nbsp;&nbsp; emit(len(v))
+* MapReduce 很好的扩展：
+    * N 个机器可以获得 Nx 的吞吐量  
+      假设 M 和 R >= N (例如很多输入文件和 map 输出文件)    
+      Map() 可以并行执行，因为它们互相没有交互  
+      Reduce() 也是一样     
+      唯一的交互就是在 map() 和 reduce() 之间的转换
+    * 可以通过买更多机器来获得更多的吞吐量  
+      而不是每个应用程序的专用高效并行化处理    
+      计算机比程序便宜
+* 什么可能会限制性能？  
+  我们关心的原因是这是可优化的事情  
+  CPU？内存？磁盘？网络？   
+  在 2004 年作者受到了“网络横截面带宽”的限制
+    * 注意在 Map -> Reduce 转换过程中，所有数据通过网络
+    * 论文中的根交换机：100-200GB/s
+    * 1800 台机器，所以 55M/秒/台机器
+    * 慢，远小于磁盘(约50-100M/s在当时)或者 RAM 的速度  
+ 所以他们关心的是在网络间最小的数据移动(数据中心的网络今天快多了)
+* 更多的细节(论文中的图1) 
+    * master：给 workers 分配任务；记住中间输出的位置
+    * M 个 Map 任务，R 个 Reduce 任务
+    * 输入文件存在 GFS，每个输入文件有3份拷贝
+    * 所有机器都运行 GFS 和 MR worker
+    * 输入任务远大于 worker 数量
+    * 旧任务完成后分发新任务
+    * Map worker 在本地磁盘将中间 key 哈希成 R 个分区
+      * 问题：有什么好的数据结构来实现这个？
+    * 所有 Map 任务执行完成后才会开始调用 Reduce
+    * master 告诉 Reducers 从 Map worker 抓取中间数据
+    * Reduce workers 将最终输出写入 GFS (每个 Reduce 一个文件)
+
