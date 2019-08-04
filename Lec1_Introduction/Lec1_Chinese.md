@@ -181,3 +181,88 @@ Reduce(k, v)
     * master 告诉 Reducers 从 Map worker 抓取中间数据
     * Reduce workers 将最终输出写入 GFS (每个 Reduce 一个文件)
 
+* reduce 是如何详细设计来降低慢网络影响的
+    * Map 的输入是从 GFS 存于本地的副本读取，而不是通过网络
+    * 中间文件只通过网络传输一次
+        * Map worker 将文件写入本地磁盘，而不是GFS
+    * 中间文件被切分成了很多份包含很多 Key 的文件
+    * 问题: 为什么不将 mapper 生成的文件以流的形式传给 reducer(通过TCP)
+* 如何获得好的负载均衡
+    * 扩展至关重要 -- N-1个 servers 等待1个服务器完成任务很不好     
+      但是很多任务可能比其他任务需要的时间更多
+    * 解决方法：task 数量比 worker 多很多   
+      master 给已经完成任务的 worker 分配新任务    
+      所有没有一个太大以至于占据多数时间（期望）    
+      所有快的 server 比慢的做更多的工作，差不多同时结束
+* 关于容错  
+  例如，一个服务器在执行一个 MR 任务的期间崩溃了会怎么样？
+    * 故障隐藏是易用性编程的重要部分    
+    问题：为什么不从一开始就重启整个任务
+    * MR 只会重新执行失败的 Map() 和 Reduce()
+        * MR 需要它们成为纯函数
+            * 它们不在调用间保持状态
+            * 它们除了 MR 的输入输出之外不会读取或写入其他文件
+            * 任务之间没有隐式通信
+        * 所以重新执行会产生相同的输出
+    * 与其他并行编程方式相比，MR 对纯函数的要求是主要的限制，但这是 MR 易用性的关键
+* worker 崩溃恢复的细节
+    * Map worker 奔溃
+        * master 发现 worker 无法 ping 通
+        * 奔溃的 worker 的临时 Map 输出丢失，但是每个 Reduce 任务都可能需要这个输出
+        * master 重新执行 worker，通过其他 GFS 的副本的输入
+        * 其他 Reduce worker 可能已经读取了这个奔溃的 Map worker 的数据
+        * master 不需要重新执行 Map 如果 Recude 已经抓取了所有的临时数据，虽然一个 Reduce 的奔溃会导致重新执行失败的 Map
+    * Reduce worker 奔溃
+        * 已经完成的任务没关系 - 已经使用副本，存储在 GFS 中
+        * master 重新分配未完成的任务给其他 worker
+    * Reduce 在输出的过程中奔溃了
+        * GFS 已经原子重命名防止输出可见，直到完成，所以 master 在其他地方重新执行 Reduce 任务是安全的
+* 其他失败/问题
+    * 如果 master 将相同的 Map 任务给了两个 worker 会怎么样?        
+    可能 master 错误地认为一个worker 一个不可用了  
+    master 只会将其中的一个通知给 Reduce worker
+    * 如果 master 将两个相同的 Map 任务分给了两个 worker 会怎么样？     
+    它们都会尝试向 GFS 写入相同的输出   
+    原子的 GFS 重命名防止混淆，一个完整的文件可见
+    * 如果一个单独的 worker 很慢怎么办 - 一个拖后腿的？     
+    可能是奇怪的硬件问题导致的      
+    master 会启动最后一些任务的第二克隆任务
+    * 如果一个 worker 由于损坏读入硬件或者软件写了不正确的输出怎么办？  
+    太糟糕了。MR 假设 CPU 和软件会故障停止
+    * 如果 master 奔溃了怎么办？    
+    从 check-point 恢复，或者放弃当前任务
+* 那些应用不适合使用 MapReduce
+    * 不是所有文件都符合 map/shuffle/reduce 格式
+    * 数据量小，因为开销大。例如不是网站后端
+    * 大数据的小更新，例如对大索引加入一些文档
+    * 不可预测的读(Map 和 Redude 都无法选择成输入)
+    * 多次合并，例如 page-rank(可以使用多次 MR 但效率不高)
+    * 更灵活的系统允许这些，但是需要更复杂的模型
+* 现实中的网络公司应该如何使用 MapReduce    
+    "CatBook",一个运营猫的社交网络的新公司，需要：
+    1) 建立一个搜索索引，索引人们可以发现其他人的猫
+    2) 分析不同猫品种的人气，来决定广告价值
+    3) 检测狗，并删除它们的资料     
+    可以使用 MapReduce 来完成以上所有的目标
+
+    
+    * 每天晚上对所有的资料允许大量批量任务
+    1) 构建反向索引     
+        map(profile text) -> (word, cat_id)     
+        reduce(word, list(cat_id) -> list(word, list(cat_id))
+    2) 统计资料访问量       
+        map(web logs) -> (cat_id, "1")  
+        reduce(cat_id, list("1")) -> list(cat_id, count)
+    3) 过滤资料     
+    map(profile image) -> img analysis -> (cat_id, "dog!")  
+    reduce(cat_id, list("dog!")) -> list(cat_id)
+        
+* 总结  
+MapReduce 一手引领了大集群计算的流行
+    * 虽然不是最有效最灵活
+    * 扩展良好
+    * 易于编程 -- 故障和数据移动被隐藏了
+
+    这些是实践中的很好的平衡    
+在后续的课程中会学习更高级的新技术   
+享受实现的乐趣  
