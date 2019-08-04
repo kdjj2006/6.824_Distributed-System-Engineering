@@ -257,12 +257,12 @@ Reduce(k, v)
     map(profile image) -> img analysis -> (cat_id, "dog!")  
     reduce(cat_id, list("dog!")) -> list(cat_id)
         
-* 总结  
+### 总结  
 MapReduce 一手引领了大集群计算的流行
     * 虽然不是最有效最灵活
     * 扩展良好
     * 易于编程 -- 故障和数据移动被隐藏了
 
-    这些是实践中的很好的平衡    
+这些是实践中的很好的平衡    
 在后续的课程中会学习更高级的新技术   
 享受实现的乐趣  
