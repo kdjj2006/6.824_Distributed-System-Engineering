@@ -53,6 +53,34 @@ func doMap(
 	//
 	// Your code here (Part I).
 	//
+	// comments 翻译
+	// doMap 管理一个 map 任务：读取一个输入文件(inFile)，使用文件内容调用用户定义的
+	// map 方法(mapF)，将 mapF 的输出切分为 nReduce 个中间文件
+	//
+	// 一个 reduce 方法一个中间文件，文件名包括 map 任务编号和 reduce 任务编号。使用
+	// reduceName(jobName, mapTask, r) 生成的文件名作为 reduce 任务 r 的中间文件。
+	// 在每个 key 上调用 ihash()，对 nReduce 取模，为一个 key/value 键值对挑选 reduce
+	// 任务 r。
+	//
+	// mapF() 是本应用提供的 map 方法，第一个参数应该是输入的文件名，虽然 map 功能一般都
+	// 忽略它。第二个参数是整个文件的内容。mapF() 为 reduce 返回一个包含 key/value 键值对
+	// 的切片。key/value 键值对的定义在 common.go 文件中。
+	//
+	// 看看 GO 的 ioutil 和 os 包，用它们来为应用读写文件。
+	//
+	// 如何格式化 key/value 键值对到磁盘的问题可能很棘手，特别是考虑到 key 和 value 都可能
+	// 包含换行符，引号和你能想到的其他字符。
+	//
+	// 一种经常用来将将数据序列化为字节流而另一边能正确重建的格式化方法是 JSON。你可以不使用 JSON，
+	// 但是 reduce 任务的输出必须是 JSON，在本处熟悉它会很有用。你可以使用下面的代码将一个结构体
+	// 作为 JSON 写入文件。相关的解码代码在 common_reduce.go 文件中。
+	//
+	//   enc := json.NewEncoder(file)
+	//   for _, kv := ... {
+	//     err := enc.Encode(&kv)
+	//
+	// 记住当你写入所有值之后关闭文件。
+	// 你的代码(Part I)
 }
 
 func ihash(s string) int {
