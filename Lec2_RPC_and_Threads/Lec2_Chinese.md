@@ -96,3 +96,61 @@ fetched map 用来避免重复，退出闭环
         * 它是如何决定已经完成的    
         sync.WaitGroup  
         隐式等待子调用完成递归提取
+    * 并发通道型爬虫
+        * GO 通道
+            * 一个通道是一个对象，可以有很多    
+                ch := make(chan int)
+            * 一个通道允许一个线程发送一个对象给另外一个线程    
+                ch <- x     
+                发送方一直等到某个 goroutine(协程) 收到消息
+            *  y := <- ch
+                 for y := range ch  
+               接收方等到某个 goroutine(协程) 发送消息
+            * 你可以使用一个通道来通信和同步    
+            多个线程可以在一个通道上收发    
+            记住：发送方阻塞直到接收方收到  
+            可能在发送时持有锁很危险    
+        * 并发通道 master()
+            * master() 新建一个 worker 协程来抓取每个页面
+            * worker() 在通道中发送 URL 地址    
+                多个 worker 在一个通道中发送
+            * master() 从通道读取 URL 地址
+        * 无须将 fetched map 加锁，因为它没有共享
+        * 有没有某些共享数据？
+            * 通道
+            * 在通道中发送的切片和字符串
+            * master() 发送给 worker() 的参数
+    * 什么时候使用共享，锁，与通道
+        * 大多数问题可以用其中的一种方式解决
+        * 最有意义的事情取决于程序员的想法
+            * 状态 -- 共享和锁
+            * 通信 -- 通道
+            * 事件等待 -- 通道
+        * 使用 GO 的竞态探测器
+            * https://golang.org/doc/articles/race_detector.html
+            * go test -race
+
+## Remote Procedure Call (RPC) 
+
+* 分布式系统机制的一个关键块；所有的实验都使用 RPC  
+    目标：易编程的 client/server 通信
+
+* RPC 消息图    
+    Client         &nbsp; &nbsp;  &nbsp; &nbsp;   &nbsp; &nbsp;  &nbsp; &nbsp;   Server       
+    request--->     
+      &nbsp; &nbsp;  &nbsp; &nbsp;   &nbsp; &nbsp;  &nbsp; &nbsp;    <---response 
+* RPC 尝试模仿本地 fn 调用      
+    > Client:       
+      &nbsp; &nbsp;  z = fn(x, y)    
+     Server:    
+      &nbsp; &nbsp;  fn(x, y) {  
+      &nbsp; &nbsp;&nbsp; &nbsp;   compute   
+      &nbsp; &nbsp;&nbsp; &nbsp;   return z  
+      &nbsp; &nbsp;  }   
+
+    实际中没这简单
+* 软件结构  
+     client app  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;       handlers    
+   &nbsp; stubs   &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;        dispatcher  
+   &nbsp;RPC lib  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;         RPC lib    
+   &nbsp;  net  &nbsp; &nbsp;&nbsp;------------&nbsp; &nbsp;net
