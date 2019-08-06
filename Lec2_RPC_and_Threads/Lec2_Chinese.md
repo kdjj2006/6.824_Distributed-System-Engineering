@@ -130,8 +130,7 @@ fetched map 用来避免重复，退出闭环
             * https://golang.org/doc/articles/race_detector.html
             * go test -race
 
-## Remote Procedure Call (RPC) 
-
+### Remote Procedure Call (RPC)
 * 分布式系统机制的一个关键块；所有的实验都使用 RPC  
     目标：易编程的 client/server 通信
 
