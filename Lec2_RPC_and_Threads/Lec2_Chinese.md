@@ -153,3 +153,30 @@ fetched map 用来避免重复，退出闭环
    &nbsp; stubs   &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;        dispatcher  
    &nbsp;RPC lib  &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;         RPC lib    
    &nbsp;  net  &nbsp; &nbsp;&nbsp;------------&nbsp; &nbsp;net
+
+* GO 例子：kv.go 链接至 schedule 页面   
+   一个 key/value 存储的玩具服务器 -- Put(key,value), Get(key)->value       
+   使用 GO 的 RPC 库    
+   * 通用：   
+       你需要为每个 RPC 类型定义参数和返回类型
+   * 客户端：   
+        connect() 的 Dial() 建立一个和服务器的 TCP 连接     
+        Call () 让 RPC 库执行调用   
+       &nbsp;&nbsp;&nbsp; &nbsp;你定义了服务器的功能名字，参数，放置回复的地方  
+       &nbsp;&nbsp;&nbsp;&nbsp; 库组织参数，发送请求，等等，解码回复    
+       &nbsp;&nbsp;&nbsp;&nbsp; Call() 的返回值代表它是否得到了回复     
+       &nbsp;&nbsp;&nbsp;&nbsp; 通常你也需要 reply.err 来表明服务层的失败   
+   *  服务器：    
+        GO 需要你定义一个含有方法的对象作为 RPC 的 处理器   
+        然后用 RPC 库注册这个对象   
+        接收 TCP 链接，把它们送给 RCP 库    
+        RCP 库  
+         &nbsp; &nbsp;&nbsp;   读取每个请求    
+        &nbsp; &nbsp;&nbsp;    为请求新建一个协程  
+        &nbsp; &nbsp;&nbsp;    解码请求    
+        &nbsp; &nbsp;&nbsp;    调用命名方法(调度)  
+        &nbsp; &nbsp;&nbsp;    组织    
+            &nbsp; &nbsp;&nbsp;&nbsp;将应答写入 TCP 连接  
+        服务器的 Get() 和 Put() 处理器      
+          &nbsp; &nbsp;&nbsp;  必须加锁，因为 RPC 库为每个请求建立协程     
+         &nbsp; &nbsp;&nbsp;   读取参数，修改应答
