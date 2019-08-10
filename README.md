@@ -1,7 +1,7 @@
 ### MIT 6.824_Distributed System Engineering 2018     
 ***
 课程目录：  
-[Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese)    
+[Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese.md)    
 [Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese)  
 [Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese)    
 Lec 4 --- Primary/Backup Replication   
