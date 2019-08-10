@@ -2,8 +2,8 @@
 ***
 课程目录：  
 [Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese.md)    
-[Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese)  
-[Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese)    
+[Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese.md)  
+[Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)    
 Lec 4 --- Primary/Backup Replication   
 Lec 5 --- Fault Tolerance: Raft [1]  
 Lec 6 --- Fault Tolerance: Raft [2]   
@@ -25,7 +25,7 @@ Lec 21 --- Peer-to-peer: Bitcoin
 Lec 22 --- Project demos
 ***
 实验目录：  
-[Lab 1 --- MapReduce](Lec1_Introduction/Lab1)    
+[Lab 1 --- MapReduce](Lec1_Introduction/Lab1.md)    
 Lab 2 --- Raft  
 Lab 3 --- KV Raft   
 Lab 4 --- Sharded KV
