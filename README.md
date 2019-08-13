@@ -1,34 +1,33 @@
 ### MIT 6.824_Distributed System Engineering 2018     
 ***
 课程目录：  
-[Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese.md)    
-[Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese.md)  
-[Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)    
-Lec 4 --- Primary/Backup Replication   
-Lec 5 --- Fault Tolerance: Raft [1]  
-Lec 6 --- Fault Tolerance: Raft [2]   
-Lec 7 --- Spinnaker     
-Lec 8 --- Zookeeper   
-Lec 9 --- Guest lecturer on Go  
-Lec 10 --- Distributed Transactions   
-Lec 11 --- Optimistic Concurrency Control   
-Lec 12 --- Big Data: Spark   
-Lec 13 --- Big Data: Naiad    
-Lec 14 --- Distributed Machine Learning: Parameter Server  
-Lec 15 --- Cache Consistency: Frangipani    
-Lec 16 --- Cache Consistency: Memcached at Facebook    
-Lec 17 --- Disconnected Operation, Eventual Consistency  
-Lec 18 --- Guest lecturer: Frank Dabek of Google    
-Lec 19 --- Peer-to-peer, DHTs  
-Lec 20 --- Dynamo     
-Lec 21 --- Peer-to-peer: Bitcoin    
-Lec 22 --- Project demos
-***
-实验目录：  
-[Lab 1 --- MapReduce](Lec1_Introduction/Lab1.md)    
-Lab 2 --- Raft  
-Lab 3 --- KV Raft   
-Lab 4 --- Sharded KV
+* [Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese.md)    
+    * [Lab 1 --- MapReduce](Lec1_Introduction/Lab1.md) 
+* [Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese.md)  
+* [Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)   
+    *  [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
+    * Lab 2 --- Raft 
+* Lec 4 --- Primary/Backup Replication   
+* Lec 5 --- Fault Tolerance: Raft [1]  
+* Lec 6 --- Fault Tolerance: Raft [2]   
+* Lec 7 --- Spinnaker     
+* Lec 8 --- Zookeeper   
+    * Lab 3 --- KV Raft   
+* Lec 9 --- Guest lecturer on Go  
+* Lec 10 --- Distributed Transactions   
+* Lec 11 --- Optimistic Concurrency Control   
+* Lec 12 --- Big Data: Spark  
+    * Lab 4 --- Sharded KV
+* Lec 13 --- Big Data: Naiad    
+* Lec 14 --- Distributed Machine Learning: Parameter Server  
+* Lec 15 --- Cache Consistency: Frangipani    
+* Lec 16 --- Cache Consistency: Memcached at Facebook    
+* Lec 17 --- Disconnected Operation, Eventual Consistency  
+* Lec 18 --- Guest lecturer: Frank Dabek of Google    
+* Lec 19 --- Peer-to-peer, DHTs  
+* Lec 20 --- Dynamo     
+* Lec 21 --- Peer-to-peer: Bitcoin    
+* Lec 22 --- Project demos
 
 ***   
 特别说明：
