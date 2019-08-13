@@ -5,7 +5,8 @@
     * [Lab 1 --- MapReduce](Lec1_Introduction/Lab1.md) 
 * [Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese.md)  
 * [Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)   
-    *  [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
+    * 准备工作：读[GFS(2003)](Lec3_GFS/The_Google_File_System.pdf) 
+    * [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
     * Lab 2 --- Raft 
 * Lec 4 --- Primary/Backup Replication   
 * Lec 5 --- Fault Tolerance: Raft [1]  
