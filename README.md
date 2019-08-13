@@ -2,13 +2,17 @@
 ***
 课程目录：  
 * [Lec 1 ---  Introduction](Lec1_Introduction/Lec1_Chinese.md)    
+    * 准备工作：研读 [MapReduce(2004)](Lec1_Introduction/MapReduce_Simplified.pdf) 
     * [Lab 1 --- MapReduce](Lec1_Introduction/Lab1.md) 
 * [Lec 2 --- RPC and Threads](Lec2_RPC_and_Threads/Lec2_Chinese.md)  
+    * 准备工作：完成[Online Go tutorial](https://tour.golang.org/welcome/1)
 * [Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)   
-    * 准备工作：读[GFS(2003)](Lec3_GFS/The_Google_File_System.pdf) 
+    * 准备工作：研读 [GFS(2003)](Lec3_GFS/The_Google_File_System.pdf) 
     * [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
     * Lab 2 --- Raft 
-* Lec 4 --- Primary/Backup Replication   
+* [Lec 4 --- Primary/Backup Replication ](Lec4_Primary_Backup_Replication/Lec4_chinese.md)
+    * 准备工作：研读
+    [Fault-Tolerant Virtual Machines(2010)](Lec4_Primary_Backup_Replication/Fault-Tolerant_Virtual_Machines.pdf)
 * Lec 5 --- Fault Tolerance: Raft [1]  
 * Lec 6 --- Fault Tolerance: Raft [2]   
 * Lec 7 --- Spinnaker     
