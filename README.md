@@ -10,7 +10,7 @@
     * 准备工作：研读 [GFS(2003)](Lec3_GFS/The_Google_File_System.pdf) 
     * [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
     * Lab 2 --- Raft 
-* [Lec 4 --- Primary/Backup Replication ](Lec4_Primary_Backup_Replication/Lec4_chinese.md)
+* [Lec 4 --- Primary/Backup Replication ](Lec4_Primary_Backup_Replication/Lec4_Chinese.md)
     * 准备工作：研读
     [Fault-Tolerant Virtual Machines(2010)](Lec4_Primary_Backup_Replication/Fault-Tolerant_Virtual_Machines.pdf)
 * Lec 5 --- Fault Tolerance: Raft [1]  

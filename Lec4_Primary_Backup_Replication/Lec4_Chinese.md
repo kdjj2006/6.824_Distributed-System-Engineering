@@ -62,3 +62,21 @@
     * 如果操作相对于数据较小
     * 但要正确很难
     * 实验 2/3/4 使用复制状态机
+* 在什么层级定义状态复制机？
+    * Key/Value 的 put 和 get？
+        * 应用层 RSM
+        * 通常需要服务端和客户端修改
+        * 可以高效；主机只发送高级别的操作给备份机
+    * X86 指令？
+        * 可能允许我们复制任何 w/o 修改的现有服务器
+        * 但是需要更多详细的主备同步
+        * 而且我们需要应付中断，DMA，奇怪的 X86 指令
+* 论文
+    * The design of a Practical System for Fault-Tolerant Virtual Machines  
+Scales, Nelson, and Venkitachalam, SIGOPS OSR Vol 44, No 4, Dec 2010    
+   注：课程论文
+    * 很不凡的系统：
+        * 目标：对享有的服务器软件容错
+        * 目标：客户端可以感知故障
+        * 目标：客户端和服务器软件不需要修改
+        *  很有雄心壮志
