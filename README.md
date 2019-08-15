@@ -9,13 +9,13 @@
 * [Lec 3 --- GFS](Lec3_GFS/Lec3_Chinese.md)   
     * 准备工作：研读 [GFS(2003)](Lec3_GFS/The_Google_File_System.pdf) 
     * [Lec 3 --- FAQ](Lec3_GFS/GFS_FAQ_Chinese.md)  
-    * Lab 2 --- Raft 
+    * Lab 2 --- Raft ------TODO
 * [Lec 4 --- Primary/Backup Replication ](Lec4_Primary_Backup_Replication/Lec4_Chinese.md)
     * 准备工作：研读
     [Fault-Tolerant Virtual Machines(2010)](Lec4_Primary_Backup_Replication/Fault-Tolerant_Virtual_Machines.pdf)
-    * [Lec 4 --- FAQ](Lec4_Primary_Backup_Replication/VMware_FT_FAQ_Chinese.md)   
-* Lec 5 --- Fault Tolerance: Raft [1]  
-* Lec 6 --- Fault Tolerance: Raft [2]   
+    * [Lec 4 --- FAQ](Lec4_Primary_Backup_Replication/VMware_FT_FAQ_Chinese.md)   -----TODO
+* [Lec 5 --- Fault Tolerance: Raft [1]](Lec5_Fault_Rolerant_Raft_1/Lec5_Chinese.md) -----TODO
+* [Lec 6 --- Fault Tolerance: Raft [2]](Lec6_Fault_Rolerant_Raft_2/Lec6_Chinese.md)  -----TODO
 * Lec 7 --- Spinnaker     
 * Lec 8 --- Zookeeper   
     * Lab 3 --- KV Raft   
