@@ -13,6 +13,7 @@
 * [Lec 4 --- Primary/Backup Replication ](Lec4_Primary_Backup_Replication/Lec4_Chinese.md)
     * 准备工作：研读
     [Fault-Tolerant Virtual Machines(2010)](Lec4_Primary_Backup_Replication/Fault-Tolerant_Virtual_Machines.pdf)
+    * [Lec 4 --- FAQ](Lec4_Primary_Backup_Replication/VMware_FT_FAQ_Chinese.md)   
 * Lec 5 --- Fault Tolerance: Raft [1]  
 * Lec 6 --- Fault Tolerance: Raft [2]   
 * Lec 7 --- Spinnaker     
