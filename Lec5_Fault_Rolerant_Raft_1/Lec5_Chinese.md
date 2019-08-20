@@ -197,4 +197,7 @@
     * 如果服务器在提交命令前失去领导权可能不会成功
     * isleader:如果服务器不是 Raft 领导者值是false,客户端应该尝试另外的服务器
     * term:currentTerm，帮助调用者检测领导者是否降级
-    * index:
+    * index:记录日志条目以查看命令是否已提交
+* ApplyMsg，使用 Index 和 Command
+    * Raft 在每个"apply channel"上发送一条消息
+    * 提交的日志条目，服务然后知道执行命令，领导者使用 ApplyMsg 去了解 什么时候/什么 去回复给一个在等待的客户端 RPC
