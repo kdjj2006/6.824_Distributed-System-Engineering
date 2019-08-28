@@ -14,10 +14,11 @@
     * 准备工作：研读
     [Fault-Tolerant Virtual Machines(2010)](Lec4_Primary_Backup_Replication/Fault-Tolerant_Virtual_Machines.pdf)
     * [Lec 4 --- FAQ](Lec4_Primary_Backup_Replication/VMware_FT_FAQ_Chinese.md) 
-* [Lec 5 --- Fault Tolerance: Raft [1]](Lec5_Fault_Rolerant_Raft_1/Lec5_Chinese.md) -----TODO
+* [Lec 5 --- Fault Tolerance: Raft [1]](Lec5_Fault_Rolerant_Raft_1/Lec5_Chinese.md)
   * 准备工作：研读
     [Raft (extended) (2014)](Lec5_Fault_Rolerant_Raft_1/raft-extended.pdf)
-* [Lec 6 --- Fault Tolerance: Raft [2]](Lec6_Fault_Rolerant_Raft_2/Lec6_Chinese.md)  -----TODO
+    * [Lec 5 --- FAQ](Lec5_Fault_Rolerant_Raft_1/Raft1_FAQ_Chinese.md) --未完
+* [Lec 6 --- Fault Tolerance: Raft [2]](Lec6_Fault_Rolerant_Raft_2/Lec6_Chinese.md)  -----未完
 * Lec 7 --- Spinnaker     
 * Lec 8 --- Zookeeper   
     * Lab 3 --- KV Raft   
