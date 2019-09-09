@@ -22,13 +22,17 @@
     * 准备工作：研读
     [Raft (extended) (2014)](Lec5_Fault_Rolerant_Raft_1/raft-extended.pdf) 第6章直到论文结束       
     * [Lec 6 --- FAQ](Lec6_Fault_Rolerant_Raft_2/Raft2_FAQ_Chinese.md) --未完
-* [Lec 7 --- Spinnaker](Lec7_Spinnaker/Lec7_Chinese.md) --未完
+* [Lec 7 --- Spinnaker](Lec7_Spinnaker/Lec7_Chinese.md)
     * 准备工作：研读
     [Spinnaker (2011)](Lec7_Spinnaker/spinnaker.pdf)       
     * [Lec 7 --- FAQ](Lec7_Spinnaker/Spinnaker_FAQ_Chinese.md) --未完
-* Lec 8 --- Zookeeper   
-    * Lab 3 --- KV Raft   
-* Lec 9 --- Guest lecturer on Go  
+* [Lec 8 --- Zookeeper](Lec8_Zookeeper/Lec8_Chinese.md)     --未完
+    * 准备工作：研读
+    [ZooKeeper (2010)](Lec8_Zookeeper/zookeeper.pdf)      
+    * [Lec 8 --- Zookeeper FAQ](Lec8_Zookeeper/Zookeeper_FAQ_Chinese.md) --未完
+    * [Lab 3 --- KV Raft](Lec8_Zookeeper/Lab3_Chinese.md) --未完
+* [Lec 9 --- Guest lecturer on Go](Lec9_Guest_lecturer_on_Go/gopattern.pdf)
+    * [Lec 9 --- Go FAQ](Lec9_Guest_lecturer_on_Go/Go_FAQ_Chinese.md) --未完
 * Lec 10 --- Distributed Transactions   
 * Lec 11 --- Optimistic Concurrency Control   
 * Lec 12 --- Big Data: Spark  
