@@ -33,12 +33,14 @@
     * [Lab 3 --- KV Raft](Lec8_Zookeeper/Lab3_Chinese.md) --未完
 * [Lec 9 --- Guest lecturer on Go](Lec9_Guest_lecturer_on_Go/gopattern.pdf)
     * [Lec 9 --- Go FAQ](Lec9_Guest_lecturer_on_Go/Go_FAQ_Chinese.md) --未完
-* [Lec 10 --- Distributed Transactions](Lec10_Distributed_Transactions/Lec10_Chinese.md)  --未完
+* [Lec 10 --- Distributed Transactions](Lec10_Distributed_Transactions/Lec10_Chinese.md)
     * 准备工作：研读
     [6.033 Chapter 9](Lec10_Distributed_Transactions/atomicity_open_5_0.pdf)   只需看9.1.5, 9.1.6, 9.5.2, 9.5.3, 9.6.3
-    * [Lec 10 --- Lec10_Distributed_Transactions FAQ](Lec10_Distributed_Transactions/Distributed_Transactions_FAQ_Chinese.md) --未完
-    
-* Lec 11 --- Optimistic Concurrency Control   
+    * [Lec 10 --- Lec10_Distributed_Transactions FAQ](Lec10_Distributed_Transactions/Distributed_Transactions_FAQ_Chinese.md) --未完    
+* [Lec 11 --- Optimistic Concurrency Control](Lec11_Optimistic_Concurrency_Control/Lec11_Chinese.md)--未完
+    * 准备工作：研读
+    [ FaRM (2015)](Lec11_Optimistic_Concurrency_Control/farm-2015.pdf)   
+    * [Lec 11 --- Lec11_Optimistic_Concurrency_Control FAQ](Lec11_Optimistic_Concurrency_Control/Optimistic_Concurrency_Control_FAQ_Chinese.md) --未完 
 * Lec 12 --- Big Data: Spark  
     * Lab 4 --- Sharded KV
 * Lec 13 --- Big Data: Naiad    
