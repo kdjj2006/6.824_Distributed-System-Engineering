@@ -163,3 +163,50 @@
     * LOCK 记录考虑 oid,版本号 # xaction 读，新值
     * 主服务器轮询日志，检查 LOCK,验证，发送 "yes" 或者 "no" 的回复消息
     * 注意 LOCK 在主服务器的 NVRAM 和 RPC 交互中都有记录
+* TC 等待所有 LOCK 返回消息
+    * 如果有任何人返回的是"no",终止
+        * 发送 ABORT 给主机然后他们释放锁
+        * 从 txCommit() 返回 "no"
+* 让我们现在忽略 VALIDATE 和 COMMIT BACKUP
+* TC 为每个写入对象发送 COMMIT-PRIMARY 给主服务器
+    * 使用 RDMA 来追加主服务器的日志
+    * TC 只等待硬件 ack -- 不等待主服务器执行日志追加
+    * TC 从 txCommit() 返回 "yes"
+* 当主服务器在日志上执行 COMMIT-PRIMARY 的时候回做什么？
+    * 将新值复制到对象的内存中
+    * 增加对象版本号
+    * 清除对象锁标记
+* 例子：
+    * T1 和 T2 都想增加 x
+    * 都说
+        ```java
+        tmp = txRead(x)
+        tmp += 1
+        txWrite(x)
+        ok = txCommit()
+    * x 应该以0，1或者2结尾，与成功提交的数量一致
+* 如果 T1 和 T2 完全操作一致会怎么样
+    * ```java
+        T1: Rx0  Lx  Cx
+    * ```java
+        T2: Rx0  Lx  Cx
+    * 会发生什么？
+* 或者 
+    * ```java
+        T1:    Rx0 Lx Cx
+    * ```java
+        T2: Rx0          Lx  Cx
+* 或者
+    * ```java
+        T1: Rx0  Lx  Cx
+    * ```java
+        T2:             Rx0  Lx  Cx
+* 验证为什么检查可序列化性的直觉：
+    * 检查“是一次执行一个”
+    * 如果没有冲突，版本不会变，允许提交
+    * 如果有冲突，一个会发现锁或者改变版本号
+* 关于图4中的 VALIDATE
+    * 它是对事务刚刚读取的对象的优化
+    * VALIDATE = 获取对象版本和锁标记的单边 RDMA 读
+    * 如果设置了锁，或者读取后版本改变了，TC 中止
+    * 没有设置锁，因此比 LOCK + COMMIT 快
