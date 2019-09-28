@@ -210,3 +210,44 @@
     * VALIDATE = 获取对象版本和锁标记的单边 RDMA 读
     * 如果设置了锁，或者读取后版本改变了，TC 中止
     * 没有设置锁，因此比 LOCK + COMMIT 快
+* VALIDATE 例子：
+    * x 和 y 初始化都是0
+    * T1
+        ```java
+        if x == 0:
+            y = 1
+    * T2
+        ```java
+        if y == 0:
+            x = 1
+    * 这是一个经典的一致性测试案例
+    * T1,T2 生成 y=1,x=0
+    * T2,T1 生成 x=1,y=0
+    * 中止可能会是 x=0,y=0
+    * 但串行化禁止生成 x=1,y=1
+* 假设同时执行
+    * ```java
+        T1:  Rx  Ly  Vx  Cy
+        T2:  Ry  Lx  Vy  Cx
+    * LOCKs 操作都成功
+    * VALIDATEs 会都失败，因为锁标记位都被设置了
+    * 所有都会中止 -- 这是可以的
+* 或者
+    * ```java
+        T1:  Rx  Ly  Vx      Cy
+        T2:  Ry          Lx  Vy  Cx
+    * 然后 T1 提交，T2 仍会中止因为 T2 的 Vy 发现 T1 的锁或者更高的版本号
+    * 所以 VALIDATE 在这个例子中看起来是对的
+        * 并且快：比 LOCK 快，不需要 COMMIT 
+* 容错呢？
+    * 防止数据丢失？
+        * 持久？可用？
+    * 即使崩溃，保证进行中的交易的完整性
+    * 分区？
+* 高层次复制图
+    * ```java
+        o o region 1
+        o o region 2
+        o CM
+        o o o ZK
+* 
