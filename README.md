@@ -46,7 +46,9 @@
 * Lec 13 --- Big Data: Naiad    
 * Lec 14 --- Distributed Machine Learning: Parameter Server  
 * Lec 15 --- Cache Consistency: Frangipani    
-* Lec 16 --- Cache Consistency: Memcached at Facebook    
+* [Lec 16 --- Cache Consistency: Memcached at Facebook](Lec16_Cache_Consistency_Memcached_at_Facebook/Lec16_Chinese.md) --未完
+     * 准备工作：研读
+    [Scaling Memcache at Facebook](Lec16_Cache_Consistency_Memcached_at_Facebook/memcache-fb.pdf)  
 * Lec 17 --- Disconnected Operation, Eventual Consistency  
 * Lec 18 --- Guest lecturer: Frank Dabek of Google    
 * Lec 19 --- Peer-to-peer, DHTs  
